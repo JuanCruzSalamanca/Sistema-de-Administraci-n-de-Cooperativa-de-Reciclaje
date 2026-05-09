@@ -45,7 +45,6 @@ Sistema de administración desarrollado para cooperativas de reciclaje que permi
 ## 🛠️ Tecnologías Utilizadas
 
 - **Lenguaje**: Python 3.14+
-- **Paradigma**: Programación imperativa
 - **Algoritmos**:
   - Insertion Sort (ordenamiento)
   - Problema de la Mochila Fraccionaria
@@ -88,7 +87,7 @@ uv sync
 ### Ejecutar el programa
 
 ```bash
-python main.py
+python programa_cooperativa.py
 ```
 
 ### Menú Principal
@@ -132,12 +131,12 @@ El sistema automáticamente:
 
 ```
 proyecto-cooperativa-reciclaje/
-├── main.py                 # Programa principal
-├── README.md              # Este archivo
-├── pyproject.toml         # Configuración del proyecto
+├── programa_cooperativa.py   # Programa principal
+├── README.md                 # Este archivo
+├── pyproject.toml            # Configuración del proyecto
 ├── images/
-│   └── logo_ctc.png      # Logo de la empresa
-└── .gitignore           # Archivos ignorados por Git
+│   └── logo_ctc.png          # Logo de la empresa
+└── .gitignore                # Archivos ignorados por Git
 ```
 
 ---
