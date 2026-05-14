@@ -1,9 +1,64 @@
+from openai import OpenAI
+import os
+
+# Configuración del cliente local de LM Studio
+client = OpenAI(
+    base_url="http://localhost:1234/v1", 
+    api_key="lm-studio"
+)
+
+# Factores de emisión (MCI): Kg de CO2 evitados por cada Kg de material reciclado
+# (Valores aproximados de referencia)
+FACTORES_EMISION = {
+    "PET": 2.35,
+    "Carton": 0.17,
+    "Aluminio": 12.75
+}
+
+def limpiar_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def esperar_y_limpiar():
+    input("\nPresiona Enter para continuar...")
+    limpiar_terminal()
+
+# ==========================================
+# IA: Interpretar Mitigación de Carbono (MCI)
+# ==========================================
+def interpretar_mci_con_ia(co2_evitado):
+    """
+    Envía el total de CO2 mitigado al modelo local para traducirlo a una analogía.
+    """
+    mensaje_sistema = (
+        "Eres un experto en sostenibilidad comunicando logros ambientales. "
+        "Tu objetivo es tomar una cantidad de CO2 mitigado (en kilogramos) y traducirla a "
+        "una analogía sencilla, inspiradora y fácil de imaginar para el usuario común. "
+        "Usa ejemplos como número de árboles plantados, días de electricidad de una casa, "
+        "o kilómetros no recorridos por un coche. Responde en un solo párrafo corto, sin usar lenguaje técnico."
+    )
+    
+    mensaje_usuario = f"Nuestra cooperativa acaba de lograr una Mitigación de Intensidad de Carbono (MCI) de {co2_evitado} kg de CO2. ¿A qué equivale esto?"
+    
+    try:
+        response = client.chat.completions.create(
+            model="local-model",
+            messages=[
+                {"role": "system", "content": mensaje_sistema},
+                {"role": "user", "content": mensaje_usuario}
+            ],
+            temperature=0.6, # Temperatura media para permitir algo de creatividad en la analogía
+            max_tokens=500
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"(La IA local no está disponible en este momento. Asegúrate de iniciar el servidor. Error: {e})"
+    
 # ==========================================
 # "Inventario" - diccionario
 # ==========================================
-inventario = {"PET":[50, 2300],
-              "Carton":[30, 550],
-              "Aluminio":[5, 300]}
+inventario = {"PET":[1000, 2512],
+              "Carton":[1720, 711],
+              "Aluminio":[707, 6486]}
 
 # ==========================================
 # Agregar elementos al inventario
@@ -159,6 +214,23 @@ def cargar_camion():
         print(f"Se cargaron {CAPACIDAD_CAMION - peso_restante} KG al camión")
         print(f"Ganancia por la carga: ${ganancia_total:,.2f}\n")
         
+        print("Calculando Mitigación de Intensidad de Carbono (MCI)...")
+        mci_total = 0
+        for material, peso_cargado in carga_planificada.items():
+            factor = FACTORES_EMISION.get(material, 0)
+            mci_total += peso_cargado * factor
+            
+        print(f"MCI Total: {mci_total:,.2f} kg de CO2 evitados.")
+        print("Generando interpretación ambiental con IA (esto puede tardar unos segundos)...\n")
+        
+        # Llamar a la IA
+        analogia_ia = interpretar_mci_con_ia(mci_total)
+        
+        print("🌍 IMPACTO AMBIENTAL LOGRADO 🌍")
+        print("-" * 90)
+        print(analogia_ia)
+        print("-" * 90 + "\n")
+        
         # Mostrar inventario actualizado
         print("INVENTARIO DESPUÉS DE LA CARGA:")
         print("-" * 90)
@@ -208,7 +280,7 @@ def menu():
             print("\nSe detectó una interrupción externa.")
         except:
             print("[!] Ingrese una opcion valida (1-4)")
+        esperar_y_limpiar()
 
 if __name__ == "__main__":
     menu()
-    
